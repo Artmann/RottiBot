@@ -1,0 +1,248 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x40a40000, pid=16044, tid=0x00001e4c
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_101-b13) (build 1.8.0_101-b13)
+# Java VM: Java HotSpot(TM) Client VM (25.101-b13 mixed mode, sharing windows-x86 )
+# Problematic frame:
+# C  0x40a40000
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0267c000):  JavaThread "main" [_thread_in_native, id=7756, stack(0x00a30000,0x00a80000)]
+
+siginfo: ExceptionCode=0xc0000005, ExceptionInformation=0x00000008 0x40a40000
+
+Registers:
+EAX=0x18ca17f8, EBX=0x14a73818, ECX=0x00b37540, EDX=0x14a78940
+ESP=0x00a7de20, EBP=0x00a7de28, ESI=0x14a73818, EDI=0x0267c000
+EIP=0x40a40000, EFLAGS=0x00010287
+
+Top of Stack: (sp=0x00a7de20)
+0x00a7de20:   5a6afffe 00000001 00a7de74 0268d3b3
+0x00a7de30:   0267c140 00a7de90 00b37540 0267c000
+0x00a7de40:   00000001 00004008 00a7de84 614901cb
+0x00a7de50:   77e094a0 00a7de54 00000000 00a7de90
+0x00a7de60:   14a78940 00000000 14a73818 00000000
+0x00a7de70:   00a7de84 00a7deb4 02684854 00000000
+0x00a7de80:   02689d09 00000001 00b37540 0267c000
+0x00a7de90:   0492c2c0 00a7de94 14a6d8d6 00a7dec0 
+
+Instructions: (pc=0x40a40000)
+0x40a3ffe0:   
+[error occurred during error reporting (printing registers, top of stack, instructions near pc), id 0xc0000005]
+
+Register to memory mapping:
+
+EAX=0x18ca17f8 is an unknown value
+EBX={method} {0x14a7381c} 'enableFlag_native' '(JI)V' in 'bwapi/Game'
+ECX=0x00b37540 is an unknown value
+EDX=0x14a78940 is pointing into metadata
+ESP=0x00a7de20 is pointing into the stack for thread: 0x0267c000
+EBP=0x00a7de28 is pointing into the stack for thread: 0x0267c000
+ESI={method} {0x14a7381c} 'enableFlag_native' '(JI)V' in 'bwapi/Game'
+EDI=0x0267c000 is a thread
+
+
+Stack: [0x00a30000,0x00a80000],  sp=0x00a7de20,  free space=311k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  0x40a40000
+j  bwapi.Game.enableFlag_native(JI)V+0
+j  bwapi.Game.enableFlag(I)V+6
+j  RottiBot.RottiBot.onStart()V+21
+j  bwapi.AIModule.onStart()V+11
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x15a2e5]
+V  [jvm.dll+0x21ff6e]
+V  [jvm.dll+0x15a37e]
+V  [jvm.dll+0xdc17b]
+V  [jvm.dll+0xdf10c]
+C  [bwapi_bridge2_5.dll+0x1b20d]
+C  [bwapi_bridge2_5.dll+0x750d3]
+j  bwapi.Mirror.startGame()V+0
+j  RottiBot.RottiBot.run()V+15
+j  RottiBot.RottiBot.main([Ljava/lang/String;)V+7
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x15a2e5]
+V  [jvm.dll+0x21ff6e]
+V  [jvm.dll+0x15a37e]
+V  [jvm.dll+0xdbf47]
+V  [jvm.dll+0xe44df]
+C  [java.exe+0x229e]
+C  [java.exe+0xaeaf]
+C  [java.exe+0xaf39]
+C  [KERNEL32.DLL+0x138f4]
+C  [ntdll.dll+0x65de3]
+C  [ntdll.dll+0x65dae]
+C  0x00000000
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  bwapi.Game.enableFlag_native(JI)V+0
+j  bwapi.Game.enableFlag(I)V+6
+j  RottiBot.RottiBot.onStart()V+21
+j  bwapi.AIModule.onStart()V+11
+v  ~StubRoutines::call_stub
+j  bwapi.Mirror.startGame()V+0
+j  RottiBot.RottiBot.run()V+15
+j  RottiBot.RottiBot.main([Ljava/lang/String;)V+7
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x02588000 JavaThread "Service Thread" daemon [_thread_blocked, id=4924, stack(0x14f90000,0x14fe0000)]
+  0x0255f800 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=16064, stack(0x14f00000,0x14f50000)]
+  0x0255e400 JavaThread "Attach Listener" daemon [_thread_blocked, id=12452, stack(0x14e70000,0x14ec0000)]
+  0x0255c400 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=15436, stack(0x14de0000,0x14e30000)]
+  0x02553c00 JavaThread "Finalizer" daemon [_thread_blocked, id=15572, stack(0x14c60000,0x14cb0000)]
+  0x024f6c00 JavaThread "Reference Handler" daemon [_thread_blocked, id=10084, stack(0x04770000,0x047c0000)]
+=>0x0267c000 JavaThread "main" [_thread_in_native, id=7756, stack(0x00a30000,0x00a80000)]
+
+Other Threads:
+  0x024f2c00 VMThread [stack: 0x046e0000,0x04730000] [id=10524]
+  0x0259ec00 WatcherThread [stack: 0x15650000,0x156a0000] [id=10536]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap:
+ def new generation   total 4928K, used 2876K [0x04800000, 0x04d50000, 0x09d50000)
+  eden space 4416K,  65% used [0x04800000, 0x04acf3c0, 0x04c50000)
+  from space 512K,   0% used [0x04c50000, 0x04c50000, 0x04cd0000)
+  to   space 512K,   0% used [0x04cd0000, 0x04cd0000, 0x04d50000)
+ tenured generation   total 10944K, used 0K [0x09d50000, 0x0a800000, 0x14800000)
+   the space 10944K,   0% used [0x09d50000, 0x09d50000, 0x09d50200, 0x0a800000)
+ Metaspace       used 510K, capacity 2777K, committed 2880K, reserved 4480K
+
+Card table byte_map: [0x025d0000,0x02660000] byte_map_base: 0x025ac000
+
+Polling page: 0x00a80000
+
+CodeCache: size=32768Kb used=779Kb max_used=779Kb free=31988Kb
+ bounds [0x02680000, 0x02748000, 0x04680000]
+ total_blobs=261 nmethods=115 adapters=77
+ compilation: enabled
+
+Compilation events (10 events):
+Event: 61.718 Thread 0x0255f800  111             jdk.internal.org.objectweb.asm.ByteVector::putByte (39 bytes)
+Event: 61.719 Thread 0x0255f800 nmethod 111 0x02741ec8 code [0x02741fd0, 0x027420cc]
+Event: 61.721 Thread 0x0255f800  112             jdk.internal.org.objectweb.asm.ClassWriter::newUTF8 (70 bytes)
+Event: 61.721 Thread 0x0255f800 nmethod 112 0x027421c8 code [0x02742310, 0x027424d8]
+Event: 61.722 Thread 0x0255f800  113             java.lang.StringBuilder::append (8 bytes)
+Event: 61.722 Thread 0x0255f800 nmethod 113 0x02742688 code [0x02742780, 0x0274281c]
+Event: 63.068 Thread 0x0255f800  114             java.lang.String::startsWith (7 bytes)
+Event: 63.068 Thread 0x0255f800 nmethod 114 0x02742888 code [0x02742980, 0x02742a1c]
+Event: 63.070 Thread 0x0255f800  115             java.util.HashMap::get (23 bytes)
+Event: 63.070 Thread 0x0255f800 nmethod 115 0x02742a88 code [0x02742ba0, 0x02742ca8]
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (10 events):
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acb560) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acb7f8) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acba90) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acbd28) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acbfc0) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acc258) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acc4f0) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acc788) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acca20) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+Event: 63.071 Thread 0x0267c000 Exception <a 'java/lang/NullPointerException'> (0x04acccb8) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u101\7261\hotspot\src\share\vm\interpreter\linkResolver.cpp, line 1178]
+
+Events (10 events):
+Event: 61.718 loading class java/lang/invoke/BoundMethodHandle$SpeciesData$1
+Event: 61.718 loading class java/lang/invoke/BoundMethodHandle$SpeciesData$1 done
+Event: 61.718 loading class java/lang/invoke/BoundMethodHandle$Factory$1
+Event: 61.718 loading class java/lang/invoke/BoundMethodHandle$Factory$1 done
+Event: 61.718 loading class java/util/concurrent/ConcurrentHashMap$ReservationNode
+Event: 61.718 loading class java/util/concurrent/ConcurrentHashMap$ReservationNode done
+Event: 63.067 loading class RottiBot/BaseManager
+Event: 63.067 loading class RottiBot/BaseManager done
+Event: 63.068 loading class RottiBot/BuildingPositionFinder
+Event: 63.068 loading class RottiBot/BuildingPositionFinder done
+
+
+Dynamic libraries:
+0x008f0000 - 0x00923000 	C:\Program Files (x86)\Java\jdk1.8.0_101\bin\java.exe
+0x77d00000 - 0x77e7b000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x74c80000 - 0x74d60000 	C:\WINDOWS\SYSTEM32\KERNEL32.DLL
+0x75020000 - 0x7519e000 	C:\WINDOWS\SYSTEM32\KERNELBASE.dll
+0x742b0000 - 0x74342000 	C:\WINDOWS\system32\apphelp.dll
+0x74b60000 - 0x74bdb000 	C:\WINDOWS\SYSTEM32\ADVAPI32.dll
+0x75290000 - 0x7534e000 	C:\WINDOWS\SYSTEM32\msvcrt.dll
+0x77cb0000 - 0x77cf4000 	C:\WINDOWS\SYSTEM32\sechost.dll
+0x77bf0000 - 0x77c9d000 	C:\WINDOWS\SYSTEM32\RPCRT4.dll
+0x74a30000 - 0x74a4e000 	C:\WINDOWS\SYSTEM32\SspiCli.dll
+0x74a20000 - 0x74a2a000 	C:\WINDOWS\SYSTEM32\CRYPTBASE.dll
+0x758b0000 - 0x75908000 	C:\WINDOWS\SYSTEM32\bcryptPrimitives.dll
+0x76120000 - 0x76267000 	C:\WINDOWS\SYSTEM32\USER32.dll
+0x75350000 - 0x7549f000 	C:\WINDOWS\SYSTEM32\GDI32.dll
+0x6ff20000 - 0x7012f000 	C:\WINDOWS\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.10586.494_none_ea85e725b9ba5a4b\COMCTL32.dll
+0x75f60000 - 0x7611d000 	C:\WINDOWS\SYSTEM32\combase.dll
+0x76350000 - 0x7637b000 	C:\WINDOWS\SYSTEM32\IMM32.DLL
+0x6f580000 - 0x6f63f000 	C:\Program Files (x86)\Java\jdk1.8.0_101\jre\bin\msvcr100.dll
+0x62c80000 - 0x6304c000 	C:\Program Files (x86)\Java\jdk1.8.0_101\jre\bin\client\jvm.dll
+0x77ca0000 - 0x77ca6000 	C:\WINDOWS\SYSTEM32\PSAPI.DLL
+0x74370000 - 0x74378000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x74a10000 - 0x74a18000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x71810000 - 0x71834000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x762d0000 - 0x7632f000 	C:\WINDOWS\SYSTEM32\WS2_32.dll
+0x009c0000 - 0x009e3000 	C:\WINDOWS\SYSTEM32\WINMMBASE.dll
+0x75f20000 - 0x75f57000 	C:\WINDOWS\SYSTEM32\cfgmgr32.dll
+0x6f570000 - 0x6f57c000 	C:\Program Files (x86)\Java\jdk1.8.0_101\jre\bin\verify.dll
+0x6ef90000 - 0x6efb1000 	C:\Program Files (x86)\Java\jdk1.8.0_101\jre\bin\java.dll
+0x6f380000 - 0x6f393000 	C:\Program Files (x86)\Java\jdk1.8.0_101\jre\bin\zip.dll
+0x76380000 - 0x7777e000 	C:\WINDOWS\SYSTEM32\SHELL32.dll
+0x75a20000 - 0x75f1a000 	C:\WINDOWS\SYSTEM32\windows.storage.dll
+0x74fd0000 - 0x75015000 	C:\WINDOWS\SYSTEM32\shlwapi.dll
+0x75910000 - 0x7591c000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x751a0000 - 0x7522d000 	C:\WINDOWS\SYSTEM32\shcore.dll
+0x77790000 - 0x777d4000 	C:\WINDOWS\SYSTEM32\powrprof.dll
+0x74b50000 - 0x74b5f000 	C:\WINDOWS\SYSTEM32\profapi.dll
+0x5a690000 - 0x5a916000 	C:\Users\artmann\Desktop\RottiReborn\classes\artifacts\RottiBot_jar\bwapi_bridge2_5.dll
+0x61410000 - 0x614fe000 	C:\WINDOWS\SYSTEM32\MSVCR120.dll
+0x5f700000 - 0x5f771000 	C:\WINDOWS\SYSTEM32\MSVCP120.dll
+0x158a0000 - 0x158fe000 	C:\Users\artmann\Desktop\RottiReborn\classes\artifacts\RottiBot_jar\libmpfr-4.dll
+0x6acc0000 - 0x6ad27000 	C:\Users\artmann\Desktop\RottiReborn\classes\artifacts\RottiBot_jar\libgmp-10.dll
+0x554f0000 - 0x5562f000 	C:\WINDOWS\SYSTEM32\dbghelp.dll
+
+VM Arguments:
+java_command: ExampleBot.jar
+java_class_path (initial): ExampleBot.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Lenovo\FusionEngine;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Lenovo\Motion Control\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\WINDOWS\system32\config\systemprofile\.dnx\bin;C:\Program Files\Microsoft DNX\Dnvm\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\HashiCorp\Vagrant\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Skype\Phone\
+USERNAME=artmann
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 60 Stepping 3, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10.0 , 64 bit Build 10586 (10.0.10586.0)
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 60 stepping 3, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2
+
+Memory: 4k page, physical 8298776k(2798972k free), swap 10527000k(2868596k free)
+
+vm_info: Java HotSpot(TM) Client VM (25.101-b13) for windows-x86 JRE (1.8.0_101-b13), built on Jun 22 2016 00:45:44 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Sun Aug 07 22:34:18 2016
+elapsed time: 2334 seconds (0d 0h 38m 54s)
+

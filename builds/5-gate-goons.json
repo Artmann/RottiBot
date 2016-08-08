@@ -1,0 +1,16 @@
+{
+  "name": "5 Gate Goon",
+  "maxWorkers": 45,
+  "attackAt": 30,
+  "buildings": [
+    { "name": "Gateway", "wall": false },
+    { "name": "Nexus", "wall": false },
+    { "name": "Gateway", "wall": false },
+    { "name": "Assimilator", "wall": false },
+    { "name": "Cybernetics Core", "wall": false },
+    { "name": "Gateway", "wall": false },
+    { "name": "Gateway", "wall": false },
+    { "name": "Gateway", "wall": false }
+  ],
+  "upgrades": [ "Singularity Charge" ]
+}

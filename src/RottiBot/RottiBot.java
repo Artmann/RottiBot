@@ -1,0 +1,168 @@
+package RottiBot;
+
+import bwapi.*;
+import bwta.BWTA;
+import bwta.Chokepoint;
+import co.artmann.builds.Build;
+
+import java.io.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class RottiBot extends DefaultBWListener {
+    private boolean isDevelopment = true;
+
+    private Mirror mirror = new Mirror();
+    private Game game;
+    private Player self;
+    private Player enemyPlayer;
+    private int buildCounter = 0;
+
+    private BaseManager baseManager = null;
+    private ArmyManager armyManager = null;
+    UnitType[] armyTypes = null;
+    private List<Chokepoint> chokepoints = null;
+
+    public void run() {
+        mirror.getModule().setEventListener(this);
+        mirror.startGame();
+    }
+    @Override
+    public void onUnitCreate(Unit unit) {
+//        System.out.println("New unit discovered " + unit.getType());
+        UnitType type = unit.getType();
+        if (type == UnitType.Protoss_Probe) {
+            baseManager.recruit(unit);
+        }
+        if (type.isBuilding()) {
+            baseManager.onUnitCreate(unit);
+        }
+
+        if (unit.getPlayer().getID() == self.getID()) {
+            for (UnitType t : this.armyTypes) {
+                if (unit.getType() == t ) {
+                    System.out.println("Recruited: "+unit.getType());
+                    armyManager.recruit(unit);
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void onUnitDiscover(Unit unit) {
+        if (unit.getType().isBuilding() && unit.getPlayer().getID() == enemyPlayer.getID()) {
+            armyManager.foundEnemyBuilding(unit);
+        }
+    }
+
+    @Override
+    public void onUnitMorph(Unit unit) {
+        if (unit.getType().isBuilding()) {
+            baseManager.onUnitCreate(unit);
+        }
+    }
+
+    @Override
+    public void onUnitDestroy(Unit unit) {
+        if (unit.getPlayer().getID() == self.getID()) {
+            for (UnitType t : armyTypes) {
+                if (unit.getType() == t ) {
+                    System.out.println("Unit Died " + unit.getType());
+                    armyManager.unitDied(unit);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        isDevelopment = false;
+        game = mirror.getGame();
+        game.enableFlag(1);
+        self = game.self();
+        enemyPlayer = game.enemy();
+        this.armyTypes = new UnitType[] { UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot, UnitType.Protoss_Dark_Templar };
+
+        Race enemyRace = enemyPlayer.getRace();
+        Build build = null;
+        String name;
+        if (enemyRace == Race.Terran) {
+            name = "dragoon-dts";
+        }  else if (enemyRace == Race.Zerg) {
+            name = "5-gate-goons";
+        } else {
+            name = "4-gate-goons";
+        }
+
+        InputStream is = null;
+        BufferedReader br;
+        is = getClass().getResourceAsStream("/"+name+".json");
+        if (is == null) {
+            FileReader in = null;
+            try {
+                in = new FileReader("builds/"+name+".json");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            br = new BufferedReader(in);
+        } else {
+            br = new BufferedReader(new InputStreamReader(is));
+        }
+        String data = br.lines().collect(Collectors.joining());
+        System.out.println(data);
+        try {
+            build = Build.load(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //Use BWTA to analyze map
+        //This may take a few minutes if the map is processed first time!
+        System.out.println("Analyzing map...");
+        BWTA.readMap();
+        BWTA.analyze();
+        System.out.println("Map data ready");
+
+        TilePosition startPosition = null;
+        for (Unit unit : game.getAllUnits()) {
+            if (unit.getType() == UnitType.Protoss_Nexus) {
+                startPosition = unit.getTilePosition();
+            }
+        }
+
+        chokepoints = BWTA.getChokepoints();
+        final TilePosition pos = startPosition;
+        Collections.sort(chokepoints,
+                (Chokepoint a, Chokepoint b) ->
+                        Double.compare(
+                                BWTA.getGroundDistance(pos, a.getCenter().toTilePosition()),
+                                BWTA.getGroundDistance(pos, b.getCenter().toTilePosition())
+                        ));
+
+
+        this.baseManager = new BaseManager(this.game, this.self, startPosition, chokepoints, build);
+        this.armyManager = new ArmyManager(game, self, enemyPlayer, chokepoints, build);
+    }
+
+    @Override
+    public void onFrame() {
+        if (this.buildCounter++ >= 10) {
+            this.baseManager.update();
+            this.armyManager.update();
+            this.buildCounter = 0;
+        }
+        if (isDevelopment) {
+            armyManager.draw();
+            baseManager.draw();
+        }
+    }
+
+
+    public static void main(String[] args) {
+        new RottiBot().run();
+
+    }
+}
