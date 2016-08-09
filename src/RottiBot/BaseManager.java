@@ -81,6 +81,14 @@ class BaseManager {
     }
 
     private void researchTech() {
+        for (TechType tech : build.getTechs()) {
+            if (player.minerals() > tech.mineralPrice() && player.gas() > tech.gasPrice()) {
+                UnitType buildingType = tech.whatResearches();
+                if (buildingCount(buildingType) > 0) {
+                    getUnits(buildingType).get(0).research(tech);
+                }
+            }
+        }
         for (UpgradeType upgrade : techs) {
             if (player.minerals() > upgrade.mineralPrice() && player.gas() > upgrade.gasPrice()) {
                 UnitType buildingType = upgrade.whatUpgrades();
@@ -99,7 +107,7 @@ class BaseManager {
             }
         }
 
-        UnitType[] wantedUnits = new UnitType[] { UnitType.Protoss_Dark_Templar, UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot };
+        UnitType[] wantedUnits = new UnitType[] { UnitType.Protoss_Observer, UnitType.Protoss_High_Templar, UnitType.Protoss_Dark_Templar, UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot };
         if (player.minerals() < 125) {
             return;
         }
@@ -109,6 +117,9 @@ class BaseManager {
                     continue;
                 }
                 if (type == UnitType.Protoss_Dark_Templar && unitCount(UnitType.Protoss_Dark_Templar) >= 2) {
+                    continue;
+                }
+                if (type == UnitType.Protoss_High_Templar && unitCount(UnitType.Protoss_High_Templar) >= 2) {
                     continue;
                 }
                 Unit building = getAvailabeTrainingBuilding(type);

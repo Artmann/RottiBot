@@ -15,6 +15,9 @@ public class Building {
             case "Citadel of Adun": return UnitType.Protoss_Citadel_of_Adun;
             case "Robotics Facility": return UnitType.Protoss_Robotics_Facility;
             case "Templar Archives": return UnitType.Protoss_Templar_Archives;
+            case "Observatory": return UnitType.Protoss_Observatory;
+            case "Photon Cannon": return UnitType.Protoss_Photon_Cannon;
+            case "Forge": return UnitType.Protoss_Forge;
         }
         return null;
     }

@@ -69,7 +69,7 @@ public class RottiBot extends DefaultBWListener {
         if (unit.getPlayer().getID() == self.getID()) {
             for (UnitType t : armyTypes) {
                 if (unit.getType() == t ) {
-                    System.out.println("Unit Died " + unit.getType());
+                    //System.out.println("Unit Died " + unit.getType());
                     armyManager.unitDied(unit);
                 }
             }
@@ -78,12 +78,15 @@ public class RottiBot extends DefaultBWListener {
 
     @Override
     public void onStart() {
-        isDevelopment = false;
+        isDevelopment = true;
         game = mirror.getGame();
         game.enableFlag(1);
         self = game.self();
         enemyPlayer = game.enemy();
-        this.armyTypes = new UnitType[] { UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot, UnitType.Protoss_Dark_Templar };
+        this.armyTypes = new UnitType[] {
+            UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot, UnitType.Protoss_Dark_Templar ,
+                UnitType.Protoss_High_Templar, UnitType.Protoss_Observer
+        };
 
         Race enemyRace = enemyPlayer.getRace();
         Build build = null;
@@ -91,7 +94,8 @@ public class RottiBot extends DefaultBWListener {
         if (enemyRace == Race.Terran) {
             name = "dragoon-dts";
         }  else if (enemyRace == Race.Zerg) {
-            name = "5-gate-goons";
+            //name = "5-gate-goons";
+            name = "FFE";
         } else {
             name = "4-gate-goons";
         }

@@ -1,0 +1,22 @@
+{
+  "name": "FFE",
+  "maxWorkers": 45,
+  "attackAt": 50,
+  "buildings": [
+    { "name": "Forge", "wall": true },
+    { "name": "Nexus", "wall": false },
+    { "name": "Photon Cannon", "wall": true },
+    { "name": "Gateway", "wall": true},
+    { "name": "Assimilator", "wall": false },
+    { "name": "Cybernetics Core", "wall": false },
+    { "name": "Citadel of Adun", "wall": false },
+    { "name": "Gateway", "wall": false},
+    { "name": "Gateway", "wall": false},
+    { "name": "Assimilator", "wall": false },
+    { "name": "Templar Archives", "wall": false },
+    { "name": "Gateway", "wall": false},
+    { "name": "Gateway", "wall": false}
+  ],
+  "upgrades": [ "Leg Enhancements", "Weapons" ],
+  "techs": [ "Psionic Storm" ]
+}

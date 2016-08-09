@@ -20,7 +20,11 @@ public class GroundUnit {
         if (position == destination) {
             return;
         }
-        this.unit.attack(position);
+        if (this.unit.canAttackMove()) {
+            this.unit.attack(position);
+        } else {
+            this.unit.move(position);
+        }
         this.destination = position;
     }
 

@@ -38,6 +38,10 @@ class ArmyManager {
     }
 
     void update() {
+        if (enemyBuildings.size() > 0 && enemyBase == null) {
+            enemyBase = enemyBuildings.get(0);
+        }
+
         int screenSize = 20 * TilePosition.SIZE_IN_PIXELS;
         for (Unit enemy : getVisibleEnemyUnits()) {
             for (GroundUnit gu : getUnits()) {
@@ -90,7 +94,7 @@ class ArmyManager {
             Unit u = groundUnit.getUnit();
             if (groundUnit.getState() == GroundUnit.STATE.ATTACK_MOVE) {
                 if (u.getOrder() != Order.AttackMove) {
-                    u.attack(enemyBase);
+                    groundUnit.attackMove(enemyBase);
                 }
             }
             if (groundUnit.getState() == GroundUnit.STATE.FIGHT) {
@@ -110,21 +114,24 @@ class ArmyManager {
             }
         }
 
-//
-//        if (this.state == STATE.AGGRESIVE) {
-//            if (strength(combatUnits) > strength(getVisibleEnemyUnits())) {
-//                if (enemyBase != null) {
-//                    for (GroundUnit gu : getUnits()) {
-//                        gu.attackMove(enemyBase);
-//                    }
-//                }
-//            } else {
-//                for (GroundUnit gu : combatGroundUnits) {
-//                    gu.getUnit().move(rendezvousPoint);
-//                }
-//            }
-//        }
+        // Storm
+        for (GroundUnit groundUnit: getUnits()) {
+            Unit u = groundUnit.getUnit();
+            if (u.getType() == UnitType.Protoss_High_Templar && u.getEnergy() >= 75) {
+                for (int i = -8; i < 9; i++) {
+                    for (int j = -8; j < 9; j++) {
+                        int x = u.getTilePosition().getX() + i;
+                        int y = u.getTilePosition().getY() + j;
+                        int count = enemiesInBox(x-1, y-1, 2, 2);
+                        if (count > 3) {
+                            u.useTech(TechType.Psionic_Storm, new TilePosition(x, y).toPosition());
+                        }
+                    }
+                }
+            }
+        }
 
+        // Rally Points
         int attackAt = this.build.getAttackAt() > 0 ? this.build.getAttackAt() : 30;
         for (Unit u : player.getUnits()) {
             if (u.getType() == UnitType.Protoss_Gateway && u.isCompleted()) {
@@ -132,9 +139,6 @@ class ArmyManager {
             }
         }
 
-        if (enemyBuildings.size() > 0 && enemyBase == null) {
-            enemyBase = enemyBuildings.get(0);
-        }
         List<Unit> enemies = getEnemyUnits();
         if (state == STATE.DEFFENSIVE) {
             if (strength() >= attackAt) {
@@ -142,21 +146,6 @@ class ArmyManager {
             }
         } else {
 
-//            if (enemies.size() > 0) {
-//                System.out.println("FOUND ENNEMIES");
-//                for (Unit unit : units) {
-//                    Unit target = getClosestEnemy(enemies, unit);
-//                    unit.attack(target.getPosition());
-//                    System.out.println(target.getType());
-//                }
-//                return;
-//            }
-
-//            if (enemyBase != null) {
-//                for (GroundUnit unit : units) {
-//                    unit.attackMove(enemyBase);
-//                }
-//            }
         }
     }
 
@@ -248,5 +237,17 @@ class ArmyManager {
         }
     }
 
-
+    private int enemiesInBox(int x, int y, int w, int h) {
+        List<Unit> units = getVisibleEnemyUnits();
+        int count = 0;
+        int mx = x + w;
+        int my = y + h;
+        for (Unit u : units) {
+            TilePosition pos = u.getTilePosition();
+            if (pos.getX() >= x && pos.getX() <= mx && pos.getY() >= y && pos.getY() <= my) {
+                count += 1;
+            }
+        }
+        return count;
+    }
 }
