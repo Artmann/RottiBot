@@ -4,12 +4,14 @@ import RottiBot.Commands.BuildCommand;
 import RottiBot.Commands.ScoutCommand;
 import RottiBot.Units.Probe;
 import bwapi.*;
+import bwta.BWTA;
 import bwta.Chokepoint;
 import co.artmann.builds.Build;
 import co.artmann.builds.Building;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class BaseManager {
@@ -25,6 +27,7 @@ class BaseManager {
     private ScoutCommand scout = null;
     private List<Chokepoint> chokepoints;
     private Build build = null;
+    private BasePlanner basePlanner = null;
 
     BaseManager(Game game, Player player, TilePosition startPosition, List<Chokepoint> chokepoints, Build build) {
         this.game = game;
@@ -47,21 +50,8 @@ class BaseManager {
                 techs.add(type);
             }
         }
+        // this.basePlanner = new BasePlanner(game, startPosition, chokepoints, this.buildingQueue);
 
-    }
-
-    void draw() {
-        for (BuildCommand cmd : commands) {
-            game.drawCircleMap(cmd.getPosition().toPosition(), TilePosition.SIZE_IN_PIXELS, Color.Cyan, true);
-        }
-        for (Probe p : probes) {
-            game.drawTextMap(p.getUnit().getPosition(), p.getState().toString());
-        }
-    }
-
-    private void issueBuildingCommand(Probe probe, UnitType building, TilePosition position) {
-        BuildCommand cmd = new BuildCommand(probe, building, position);
-        this.commands.add(cmd);
     }
 
     void update() {
@@ -78,6 +68,22 @@ class BaseManager {
         researchTech();
         buildStuff();
         trainUnits();
+    }
+
+
+    void draw() {
+        for (BuildCommand cmd : commands) {
+            game.drawCircleMap(cmd.getPosition().toPosition(), TilePosition.SIZE_IN_PIXELS, Color.Cyan, true);
+        }
+        for (Probe p : probes) {
+            game.drawTextMap(p.getUnit().getPosition(), p.getState().toString() + " - " + p.getUnit().getOrder());
+        }
+        this.basePlanner.draw();
+    }
+
+    private void issueBuildingCommand(Probe probe, UnitType building, TilePosition position) {
+        BuildCommand cmd = new BuildCommand(probe, building, position);
+        this.commands.add(cmd);
     }
 
     private void researchTech() {
@@ -207,6 +213,16 @@ class BaseManager {
         if (player.minerals() < type.mineralPrice() || player.gas() < type.gasPrice()) {
             return false;
         }
+        if (type.isBuilding()) {
+            Set<UnitType> required = type.requiredUnits().keySet();
+            for (UnitType r : required) {
+                if (r.isBuilding() && buildingCount(r) == 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         UnitType buildingType = type.whatBuilds().first;
         return buildingCount(buildingType) > 0;
     }

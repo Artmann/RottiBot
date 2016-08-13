@@ -49,33 +49,39 @@ class BuildingPositionFinder {
     private TilePosition getPylonPosition(Unit unit) {
         List<Unit> pylons = player.getUnits().stream().filter(u -> u.getType() == UnitType.Protoss_Pylon).collect(Collectors.toList());
         if (pylons.size() == 0) {
-            int x = startPosition.getX();
-            int y = startPosition.getY();
-            for (int i = -12; i < 12; i += 2) {
-                for (int j = -12; j < 12; j += 2) {
-                    if (i > 5 && j > 5) {
-                        TilePosition pos = new TilePosition(x + i, y + j);
-                        if (game.canBuildHere(pos, UnitType.Protoss_Pylon, unit, false)) {
-                            return pos;
-                        }
+            List<Unit> minerals = game.neutral().getUnits().stream().filter(u -> u.getType().isMineralField()).collect(Collectors.toList());
+            double angle = angle(startPosition, minerals.get(0).getTilePosition());
+            for (int d = 0; d < 360; d += 10) {
+                for (int r = 6; r > 0; r--) {
+                    TilePosition pos = positionOnCircle(startPosition, angle + d, r);
+                    if (game.canBuildHere(pos, UnitType.Protoss_Pylon, unit, false)) {
+                        return pos;
                     }
                 }
             }
+//            System.out.println("ANGLE!!!! "+angle);
+//            int x = startPosition.getX();
+//            int y = startPosition.getY();
+//            for (int i = -12; i < 12; i += 2) {
+//                for (int j = -12; j < 12; j += 2) {
+//                    if (i > 5 && j > 5) {
+//                        TilePosition pos = new TilePosition(x + i, y + j);
+//                        if (game.canBuildHere(pos, UnitType.Protoss_Pylon, unit, false)) {
+//                            return pos;
+//                        }
+//                    }
+//                }
+//            }
         }
-        double baseAngle = angle(this.startPosition, this.chokepoints.get(0).getCenter().toTilePosition());
-        System.out.println(baseAngle);
+
+        int baseAngle = (int) (Math.random() * 360);
         for (int p = pylons.size() - 1; p >= 0; p--) {
-            for (int i = -6; i <= 6; i++) {
-                for (int j = -6; j <= 6; j += 6) {
-                    Unit pylon = pylons.get(p);
-                    for (int d = 0; i < 360; d += 10) {
-                        for (int r = 6; r > 0; r--) {
-                            TilePosition pos = positionOnCircle(pylon.getTilePosition(), baseAngle + d, 6);
-                          //  System.out.println("CIRCLE:" + pos);
-                            if (game.canBuildHere(pos, UnitType.Protoss_Pylon, unit, false)) {
-                                return pos;
-                            }
-                        }
+            Unit pylon = pylons.get(p);
+            for (int r = 6; r > 0; r--) {
+                for (int d = 0; d < 360; d += 10) {
+                    TilePosition pos = positionOnCircle(pylon.getTilePosition(), baseAngle + d, r);
+                    if (game.canBuildHere(pos, UnitType.Protoss_Pylon, unit, false)) {
+                        return pos;
                     }
                 }
             }
@@ -94,7 +100,7 @@ class BuildingPositionFinder {
         double angle = Math.toRadians(degrees);
         double x = radius * Math.cos(angle) + center.getX();
         double y = radius * Math.sin(angle) + center.getY();
-        return new TilePosition((int)Math.round(x), (int)Math.round(y));
+        return new TilePosition((int) Math.round(x), (int) Math.round(y));
     }
 
     TilePosition getBuildingPosition(UnitType building, Unit unit) {
@@ -136,7 +142,7 @@ class BuildingPositionFinder {
     private TilePosition getAssimilatorPosition(Unit unit) {
         List<Unit> geysers = game.getNeutralUnits().stream().filter(u -> u.getType() == UnitType.Resource_Vespene_Geyser).collect(Collectors.toList());
         Unit c = null;
-        int dist =  0;
+        int dist = 0;
         for (Unit u : geysers) {
             int d = unit.getDistance(u.getPosition());
             if (d < dist || dist == 0) {
