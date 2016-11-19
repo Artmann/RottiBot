@@ -6,6 +6,10 @@ import bwta.Chokepoint;
 import co.artmann.builds.Build;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +27,9 @@ public class RottiBot extends DefaultBWListener {
     private ArmyManager armyManager = null;
     UnitType[] armyTypes = null;
     private List<Chokepoint> chokepoints = null;
+
+    private Build build;
+    public int attackTiming;
 
     public void run() {
         mirror.getModule().setEventListener(this);
@@ -89,39 +96,17 @@ public class RottiBot extends DefaultBWListener {
         };
 
         Race enemyRace = enemyPlayer.getRace();
-        Build build = null;
-        String name;
-        if (enemyRace == Race.Terran) {
-            name = "dragoon-dts";
-        }  else if (enemyRace == Race.Zerg) {
-            //name = "5-gate-goons";
-            name = "FFE";
-        } else {
-            name = "4-gate-goons";
-        }
-
-        InputStream is = null;
-        BufferedReader br;
-        is = getClass().getResourceAsStream("/"+name+".json");
-        if (is == null) {
-            FileReader in = null;
-            try {
-                in = new FileReader("builds/"+name+".json");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            br = new BufferedReader(in);
-        } else {
-            br = new BufferedReader(new InputStreamReader(is));
-        }
-        String data = br.lines().collect(Collectors.joining());
-        System.out.println(data);
+        this.build = null;
         try {
-            build = Build.load(data);
+            this.build = this.getBuild(enemyRace);
         } catch (IOException e) {
+            System.out.println("COULD NOT LOAD BUILD");
             e.printStackTrace();
         }
-
+        if (this.build == null) {
+            System.out.println("NO BUILD; Exiting");
+            System.exit(1);
+        }
 
         //Use BWTA to analyze map
         //This may take a few minutes if the map is processed first time!
@@ -147,8 +132,31 @@ public class RottiBot extends DefaultBWListener {
                         ));
 
 
-        this.baseManager = new BaseManager(this.game, this.self, startPosition, chokepoints, build);
-        this.armyManager = new ArmyManager(game, self, enemyPlayer, chokepoints, build);
+        this.baseManager = new BaseManager(this.game, this.self, startPosition, chokepoints, this.build);
+        this.armyManager = new ArmyManager(this, this.game, this.self, enemyPlayer, chokepoints, this.build);
+    }
+
+    private void saveGameData(boolean isWinner) {
+        String name = this.game.enemy().getName();
+        String build = this.build.getName();
+        String winner = isWinner ? "1" : "0";
+
+        String[] row = new String[] { name, build, this.attackTiming+"", winner};
+        String output = String.join(",", row) + "\n";
+        try {
+            Path path = Paths.get("Starcraft/bwapi-data/write/match-history.csv");
+            File file = path.toFile();
+            if (!file.exists()) { Files.createFile(path); }
+            Files.write(path, output.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onEnd(boolean b) {
+        System.out.println("GAME ENDED");
+        this.saveGameData(b);
     }
 
     @Override
@@ -168,5 +176,37 @@ public class RottiBot extends DefaultBWListener {
     public static void main(String[] args) {
         new RottiBot().run();
 
+    }
+
+    public Build getBuild(Race enemyRace) throws IOException {
+        Build build = null;
+        String name;
+        if (enemyRace == Race.Terran) {
+            name = "dragoon-dts";
+        }  else if (enemyRace == Race.Zerg) {
+            name = "5-gate-goons";
+        } else {
+            name = "4-gate-goons";
+        }
+
+        InputStream is = null;
+        BufferedReader br;
+        is = getClass().getResourceAsStream("/"+name+".json");
+        if (is == null) {
+            FileReader in = null;
+            try {
+                in = new FileReader("builds/"+name+".json");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            br = new BufferedReader(in);
+        } else {
+            br = new BufferedReader(new InputStreamReader(is));
+        }
+        String data = br.lines().collect(Collectors.joining());
+        System.out.println(data);
+
+        build = Build.load(data);
+        return build;
     }
 }

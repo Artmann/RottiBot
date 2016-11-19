@@ -10,5 +10,6 @@
     { "name": "Gateway", "wall": false },
     { "name": "Gateway", "wall": false }
   ],
-  "upgrades": [ "Singularity Charge" ]
+  "upgrades": [ "Singularity Charge" ],
+  "techs": []
 }

@@ -26,8 +26,9 @@ class ArmyManager {
     private List<Chokepoint> chokepoints;
     private Position rendezvousPoint = null;
     private Build build = null;
+    private RottiBot main;
 
-    ArmyManager(Game game, Player player, Player enemyPlayer, List<Chokepoint> chokepoints, Build build) {
+    ArmyManager(RottiBot main, Game game, Player player, Player enemyPlayer, List<Chokepoint> chokepoints, Build build) {
         this.game = game;
         this.player = player;
         this.state = STATE.DEFFENSIVE;
@@ -35,6 +36,7 @@ class ArmyManager {
         this.chokepoints = chokepoints;
         this.rendezvousPoint = chokepoints.get(1).getCenter();
         this.build = build;
+        this.main = main;
     }
 
     void update() {
@@ -143,6 +145,7 @@ class ArmyManager {
         if (state == STATE.DEFFENSIVE) {
             if (strength() >= attackAt) {
                 this.state = STATE.AGGRESIVE;
+                this.main.attackTiming = game.elapsedTime();
             }
         } else {
 

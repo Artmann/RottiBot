@@ -78,7 +78,9 @@ class BaseManager {
         for (Probe p : probes) {
             game.drawTextMap(p.getUnit().getPosition(), p.getState().toString() + " - " + p.getUnit().getOrder());
         }
-        this.basePlanner.draw();
+        if (this.basePlanner != null) {
+            this.basePlanner.draw();
+        }
     }
 
     private void issueBuildingCommand(Probe probe, UnitType building, TilePosition position) {
