@@ -4,10 +4,9 @@ import RottiBot.Commands.BuildCommand;
 import RottiBot.Commands.ScoutCommand;
 import RottiBot.Units.Probe;
 import bwapi.*;
-import bwta.BWTA;
 import bwta.Chokepoint;
-import co.artmann.builds.Build;
-import co.artmann.builds.Building;
+import RottiBot.builds.Build;
+import RottiBot.builds.Building;
 
 import java.util.ArrayList;
 import java.util.List;

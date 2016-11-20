@@ -1,4 +1,4 @@
-package co.artmann.builds;
+package RottiBot.builds;
 
 import bwapi.TechType;
 import bwapi.UpgradeType;
@@ -6,8 +6,6 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 
 public class Build {
@@ -69,22 +67,5 @@ public class Build {
 
     public Building[] getBuildings() {
         return buildings;
-    }
-
-    public static Build load(String data) throws IOException {
-        //String text = readFile(path);
-
-        Gson gson = new Gson();
-        Build build = gson.fromJson(data, Build.class);
-        return build;
-    }
-
-    private static String readFile(String path) throws IOException {
-        File file = new File(path);
-        FileInputStream fis = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        fis.read(data);
-        fis.close();
-        return new String(data, "UTF-8");
     }
 }

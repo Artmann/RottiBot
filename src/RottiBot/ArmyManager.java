@@ -2,13 +2,10 @@ package RottiBot;
 
 import RottiBot.Units.GroundUnit;
 import bwapi.*;
-import bwta.BWTA;
 import bwta.Chokepoint;
-import co.artmann.builds.Build;
-import com.sun.org.apache.xpath.internal.operations.Or;
+import RottiBot.builds.Build;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

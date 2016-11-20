@@ -1,4 +1,4 @@
-package co.artmann.builds;
+package RottiBot.builds;
 
 import bwapi.UnitType;
 

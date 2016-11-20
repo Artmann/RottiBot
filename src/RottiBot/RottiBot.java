@@ -1,9 +1,10 @@
 package RottiBot;
 
+import RottiBot.builds.BuildRepository;
 import bwapi.*;
 import bwta.BWTA;
 import bwta.Chokepoint;
-import co.artmann.builds.Build;
+import RottiBot.builds.Build;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -95,14 +96,11 @@ public class RottiBot extends DefaultBWListener {
                 UnitType.Protoss_High_Templar, UnitType.Protoss_Observer
         };
 
+
+
         Race enemyRace = enemyPlayer.getRace();
-        this.build = null;
-        try {
-            this.build = this.getBuild(enemyRace);
-        } catch (IOException e) {
-            System.out.println("COULD NOT LOAD BUILD");
-            e.printStackTrace();
-        }
+        BuildRepository buildRepository = new BuildRepository();
+        this.build = buildRepository.getBuildFor(enemyPlayer.getName(), enemyRace);
         if (this.build == null) {
             System.out.println("NO BUILD; Exiting");
             System.exit(1);
@@ -144,7 +142,7 @@ public class RottiBot extends DefaultBWListener {
         String[] row = new String[] { name, build, this.attackTiming+"", winner};
         String output = String.join(",", row) + "\n";
         try {
-            Path path = Paths.get("Starcraft/bwapi-data/write/match-history.csv");
+            Path path = Paths.get("bwapi-data/write/match-history.csv");
             File file = path.toFile();
             if (!file.exists()) { Files.createFile(path); }
             Files.write(path, output.getBytes(), StandardOpenOption.APPEND);
@@ -178,35 +176,4 @@ public class RottiBot extends DefaultBWListener {
 
     }
 
-    public Build getBuild(Race enemyRace) throws IOException {
-        Build build = null;
-        String name;
-        if (enemyRace == Race.Terran) {
-            name = "dragoon-dts";
-        }  else if (enemyRace == Race.Zerg) {
-            name = "5-gate-goons";
-        } else {
-            name = "4-gate-goons";
-        }
-
-        InputStream is = null;
-        BufferedReader br;
-        is = getClass().getResourceAsStream("/"+name+".json");
-        if (is == null) {
-            FileReader in = null;
-            try {
-                in = new FileReader("builds/"+name+".json");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            br = new BufferedReader(in);
-        } else {
-            br = new BufferedReader(new InputStreamReader(is));
-        }
-        String data = br.lines().collect(Collectors.joining());
-        System.out.println(data);
-
-        build = Build.load(data);
-        return build;
-    }
 }
