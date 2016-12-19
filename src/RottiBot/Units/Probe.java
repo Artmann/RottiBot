@@ -1,14 +1,14 @@
 package RottiBot.Units;
 
-import bwapi.TilePosition;
-import bwapi.Unit;
-import bwapi.UnitType;
+import RottiBot.PositionUtil;
+import bwapi.*;
 
 import javax.rmi.CORBA.Tie;
 import java.util.Collections;
 import java.util.List;
 
 public class Probe {
+
     public enum STATE {
         IDLE, MINING, MINING_GAS, BUILDING, SCOUTING
     }
@@ -16,18 +16,46 @@ public class Probe {
     private STATE state;
     private Unit assimilator = null;
 
+    private UnitType buildingType;
+    private TilePosition buildingPosition;
+
     public Probe(Unit unit) {
         this.unit = unit;
         this.setState(STATE.IDLE);
     }
 
-    public boolean build(UnitType building, TilePosition position){
-        this.state = STATE.BUILDING;
-        return this.unit.build(building, position);
+    public void tick() {
+        if (this.state == STATE.BUILDING) {
+            // If the probe is standing still we should move to the build position or build the building
+            Order currentOrder = this.unit.getOrder();
+            if (currentOrder == Order.PlayerGuard || currentOrder == Order.MoveToMinerals || currentOrder == Order.MiningMinerals) {
+                Position pos = PositionUtil.translate(this.buildingPosition.toPosition(), 16, 16);
+                if (this.unit.getDistance(pos) > TilePosition.SIZE_IN_PIXELS * 3) {
+                    this.unit.move(pos);
+                } else {
+                    this.unit.build(this.buildingType, this.buildingPosition);
+                }
+            }
+        }
     }
 
-    public boolean moveTo(TilePosition position) {
-        return this.unit.move(position.toPosition());
+    public void build(UnitType building, TilePosition position){
+        this.state = STATE.BUILDING;
+        this.buildingType = building;
+        this.buildingPosition = position;
+    }
+
+    public void didCompleteBuilding() {
+        this.buildingType = null;
+        this.buildingPosition = null;
+        this.state = STATE.IDLE;
+    }
+
+    public void draw(Game game) {
+        game.drawTextMap(this.unit.getPosition(), this.state.toString() + " - " + this.unit.getOrder());
+        if (this.buildingPosition != null) {
+            game.drawCircleMap(this.buildingPosition.toPosition(), TilePosition.SIZE_IN_PIXELS, Color.Cyan, true);
+        }
     }
 
     public void mine(List<Unit> minerals) {
@@ -62,5 +90,9 @@ public class Probe {
 
     public Unit getUnit() {
         return unit;
+    }
+
+    public UnitType getBuildingType() {
+        return buildingType;
     }
 }

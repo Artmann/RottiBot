@@ -1,6 +1,5 @@
 package RottiBot;
 
-import RottiBot.Commands.BuildCommand;
 import RottiBot.Commands.ScoutCommand;
 import RottiBot.Units.Probe;
 import bwapi.*;
@@ -19,7 +18,6 @@ class BaseManager {
     private TilePosition startPosition;
     private ArrayList<Probe> probes = new ArrayList<>();
     private ArrayList<UnitType> buildingQueue = new ArrayList<>();
-    private ArrayList<BuildCommand> commands = new ArrayList<>();
     private ArrayList<UpgradeType> techs = new ArrayList<>();
     private UnitType nextBuilding = null;
     private BuildingPositionFinder positionFinder = null;
@@ -38,7 +36,6 @@ class BaseManager {
 
         for (Building building : build.getBuildings()) {
             UnitType type = building.getType();
-            System.out.println("BUILDING: "+type);
             if (type != null) {
                 System.out.println(type);
                 buildingQueue.add(type);
@@ -49,8 +46,6 @@ class BaseManager {
                 techs.add(type);
             }
         }
-        // this.basePlanner = new BasePlanner(game, startPosition, chokepoints, this.buildingQueue);
-
     }
 
     void update() {
@@ -63,6 +58,11 @@ class BaseManager {
         if (this.scout != null) {
             this.scout.update();
         }
+
+        for (Probe p : this.probes) {
+            p.tick();
+        }
+
         mineWithIdleProbes();
         researchTech();
         buildStuff();
@@ -71,11 +71,8 @@ class BaseManager {
 
 
     void draw() {
-        for (BuildCommand cmd : commands) {
-            game.drawCircleMap(cmd.getPosition().toPosition(), TilePosition.SIZE_IN_PIXELS, Color.Cyan, true);
-        }
-        for (Probe p : probes) {
-            game.drawTextMap(p.getUnit().getPosition(), p.getState().toString() + " - " + p.getUnit().getOrder());
+        for (Probe probe : probes) {
+            probe.draw(this.game);
         }
         if (this.basePlanner != null) {
             this.basePlanner.draw();
@@ -83,8 +80,7 @@ class BaseManager {
     }
 
     private void issueBuildingCommand(Probe probe, UnitType building, TilePosition position) {
-        BuildCommand cmd = new BuildCommand(probe, building, position);
-        this.commands.add(cmd);
+        probe.build(building, position);
     }
 
     private void researchTech() {
@@ -114,7 +110,7 @@ class BaseManager {
             }
         }
 
-        UnitType[] wantedUnits = new UnitType[] { UnitType.Protoss_Observer, UnitType.Protoss_High_Templar, UnitType.Protoss_Dark_Templar, UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot };
+        UnitType[] wantedUnits = new UnitType[]{UnitType.Protoss_Observer, UnitType.Protoss_High_Templar, UnitType.Protoss_Dark_Templar, UnitType.Protoss_Dragoon, UnitType.Protoss_Zealot};
         if (player.minerals() < 125) {
             return;
         }
@@ -152,34 +148,19 @@ class BaseManager {
     }
 
     private void buildStuff() {
-        for (BuildCommand cmd : commands) {
-            cmd.update();
-        }
 
         // Build stuff
         if (nextBuilding == null && buildingQueue.size() > 0) {
             nextBuilding = buildingQueue.get(0);
             buildingQueue.remove(0);
         }
-//        // Initial pylon
-//        if (isInitialPylonPlaced == false && player.minerals() >= UnitType.Protoss_Pylon.mineralPrice()) {
-//            Probe probe = getWorker();
-//            if (probe != null) {
-//                TilePosition pos = positionFinder.getBuildingPosition(UnitType.Protoss_Pylon, probe.getUnit());
-//                if (pos != null) {
-//                    issueBuildingCommand(probe, UnitType.Protoss_Pylon, pos);
-//                    isInitialPylonPlaced = true;
-//                } else {
-//                    System.out.println("Can not find position for pylon!");
-//                }
-//
-//            }
-//            return;
-//        }
+
         Probe probe = getWorker();
         long constructionPylons = player.getUnits().stream().filter(u -> u.getType() == UnitType.Protoss_Pylon && u.isConstructing()).count();
         int pc = player.supplyTotal() < 50 ? 1 : 2;
-        if (player.supplyUsed() >= (player.supplyTotal()-4)  && constructionPylons < pc && commands.size() == 0 && canBuild(UnitType.Protoss_Pylon)) {
+        int supplyOffset = player.supplyTotal() < 50 ? 4 : 10;
+        int probesConstructingPylons = this.numberOfProbesBuilding(UnitType.Protoss_Pylon);
+        if (player.supplyUsed() >= (player.supplyTotal() - supplyOffset) && constructionPylons < pc && probesConstructingPylons == 0 && canBuild(UnitType.Protoss_Pylon)) {
             TilePosition pos = positionFinder.getBuildingPosition(UnitType.Protoss_Pylon, probe.getUnit());
             if (pos != null) {
                 issueBuildingCommand(probe, UnitType.Protoss_Pylon, pos);
@@ -188,11 +169,10 @@ class BaseManager {
             }
         }
 
-        if (buildingCount(UnitType.Protoss_Pylon) > 0  && commands.size() == 0) {
-            if (nextBuilding != null) {
+        if (nextBuilding != null) {
+            if (buildingCount(UnitType.Protoss_Pylon) > 0 && numberOfProbesBuilding(nextBuilding) == 0) {
                 if (canBuild(nextBuilding)) {
-                    TilePosition pos = null;
-                    pos = positionFinder.getBuildingPosition(nextBuilding, probe.getUnit());
+                    TilePosition pos = positionFinder.getBuildingPosition(nextBuilding, probe.getUnit());
                     if (pos == null && constructionPylons == 0) {
                         pos = positionFinder.getBuildingPosition(UnitType.Protoss_Pylon, probe.getUnit());
                         if (pos != null) {
@@ -208,6 +188,10 @@ class BaseManager {
             }
 
         }
+    }
+
+    private int numberOfProbesBuilding(UnitType buildingType) {
+        return (int) this.probes.stream().filter(p -> p.getBuildingType() == buildingType).count();
     }
 
     private boolean canBuild(UnitType type) {
@@ -235,7 +219,7 @@ class BaseManager {
         }
         List<Probe> miningWorkers = this.getProbes(Probe.STATE.MINING);
         if (miningWorkers.size() > 0) {
-            return  miningWorkers.get(0);
+            return miningWorkers.get(0);
         }
         return null;
     }
@@ -252,7 +236,7 @@ class BaseManager {
             int c = 0;
             for (Probe p : getProbes(Probe.STATE.MINING_GAS)) {
                 Unit b = p.getAssimilator();
-                if ( b != null && b.getID() == a.getID()) {
+                if (b != null && b.getID() == a.getID()) {
                     c++;
                 }
             }
@@ -261,7 +245,9 @@ class BaseManager {
             }
         }
 
-        if (probes.size() == 0) { return; }
+        if (probes.size() == 0) {
+            return;
+        }
         List<Unit> minerals = game.neutral().getUnits().stream().filter(u -> u.getType().isMineralField()).collect(Collectors.toList());
         for (Probe probe : probes) {
             probe.mine(minerals);
@@ -285,18 +271,14 @@ class BaseManager {
     }
 
     void onUnitCreate(Unit unit) {
-        System.out.println(unit.getType());
-        BuildCommand command = null;
-        for (BuildCommand cmd : commands) {
-            if (unit.getType() == cmd.getBuilding()) {
-                cmd.didPlaceStructure();
-                command = cmd;
-                break;
+        // System.out.println(unit.getType());
+        for (Probe probe : probes) {
+            if (unit.getType() == probe.getBuildingType()) {
+                probe.didCompleteBuilding();
+                return;
             }
         }
-        if (command != null) {
-            commands.remove(command);
-        }
+
     }
 
 }
